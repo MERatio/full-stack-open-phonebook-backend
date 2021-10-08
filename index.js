@@ -11,7 +11,7 @@ app.use(cors());
 app.use(express.static('build'));
 app.use(express.json());
 
-morgan.token('body', (request, response) => JSON.stringify(request.body));
+morgan.token('body', (request) => JSON.stringify(request.body));
 app.use(
 	morgan(':method :url :status :res[content-length] - :response-time ms :body')
 );
@@ -34,7 +34,7 @@ app.get('/api/persons', (request, response) => {
 
 app.post('/api/persons', (request, response, next) => {
 	const { name, number } = request.body;
-	Person.findOne({ name }).then((foundPerson) => {
+	Person.findOne({ name }).then(() => {
 		const person = new Person({
 			id: generateId(),
 			name,
@@ -101,7 +101,7 @@ const errorHandler = (error, request, response, next) => {
 		return response.status(400).send({ error: 'malformatted id' });
 	} else if (error.name === 'ValidationError') {
 		return response.status(400).json({ error: error.message });
-	} else if ((error.name = 'NotFound')) {
+	} else if (error.name === 'NotFound') {
 		return response.status(404).json({ error: error.message });
 	}
 	next(error);
